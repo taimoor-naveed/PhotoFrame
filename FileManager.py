@@ -85,17 +85,25 @@ def processOnCreated(src_path, internalDirectory, fileList):
 
         image = resizeImage(image, 1024, 600)
         
-        angle = getRotationData(src_path)
-        image = image.rotate(-angle)
+        if not src_path.lower().endswith(".heic"):
+            angle = getRotationData(src_path)
+            image = image.rotate(-angle)
 
-        image.save(os.path.join(internalDirectory, os.path.basename(src_path)))
-        fileList.insert(random.randrange(len(fileList) + 1), os.path.basename(src_path))
+        new_file_name = os.path.splitext(src_path)[0] + ".jpg"
+        name_in_list = os.path.splitext(os.path.basename(new_file_name))[0]
+        print(name_in_list)
+
+        image.save(os.path.join(internalDirectory, os.path.basename(new_file_name)))
+        fileList.insert(random.randrange(len(fileList) + 1), name_in_list)
         
 def processOnDeleted(src_path, internalDirectory, fileList):
-    if os.path.exists(os.path.join(internalDirectory, os.path.basename(src_path))):
-        os.remove(os.path.join(internalDirectory, os.path.basename(src_path)))
-    if os.path.basename(src_path) in fileList:
-        fileList.remove(os.path.basename(src_path))
+    new_file_name = os.path.splitext(src_path)[0] + ".jpg"
+    name_in_list = os.path.splitext(os.path.basename(new_file_name))[0]
+
+    if os.path.exists(os.path.join(internalDirectory, os.path.basename(new_file_name))):
+        os.remove(os.path.join(internalDirectory, os.path.basename(new_file_name)))
+    if name_in_list in fileList:
+        fileList.remove(name_in_list)
 
 def processOnMoved(src_path, dest_path, internalDirectory, fileList):
     if os.path.exists(os.path.join(internalDirectory, os.path.basename(src_path))):
