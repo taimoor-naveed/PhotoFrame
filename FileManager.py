@@ -73,10 +73,18 @@ def findOptimalRect(fileName):
         return None
 
 
+def replaceFileExtension(fileName, extension):
+    pre, ext = os.path.splitext(fileName)
+    return pre + extension
+
 def processOnCreated(src_path, internalDirectory, fileList):
     if os.path.exists(src_path):
         image = Image.open(src_path)
         
+        if not src_path.lower().endswith(".heic"):
+            angle = getRotationData(src_path)
+            image = image.rotate(-angle)
+
         rect = None
         if 'nocrop' not in src_path:
             rect = findOptimalRect(src_path)
@@ -84,28 +92,24 @@ def processOnCreated(src_path, internalDirectory, fileList):
             image = cropImage(image, rect)
 
         image = resizeImage(image, 1024, 600)
-        
-        if not src_path.lower().endswith(".heic"):
-            angle = getRotationData(src_path)
-            image = image.rotate(-angle)
 
-        new_file_name = os.path.splitext(src_path)[0] + ".jpg"
-        name_in_list = os.path.splitext(os.path.basename(new_file_name))[0]
-        print(name_in_list)
+        src_path = replaceFileExtension(src_path, ".jpg")
 
-        image.save(os.path.join(internalDirectory, os.path.basename(new_file_name)))
-        fileList.insert(random.randrange(len(fileList) + 1), name_in_list)
+        image.save(os.path.join(internalDirectory, os.path.basename(src_path)))
+        fileList.insert(random.randrange(len(fileList) + 1), os.path.basename(src_path))
         
 def processOnDeleted(src_path, internalDirectory, fileList):
-    new_file_name = os.path.splitext(src_path)[0] + ".jpg"
-    name_in_list = os.path.splitext(os.path.basename(new_file_name))[0]
 
-    if os.path.exists(os.path.join(internalDirectory, os.path.basename(new_file_name))):
-        os.remove(os.path.join(internalDirectory, os.path.basename(new_file_name)))
-    if name_in_list in fileList:
-        fileList.remove(name_in_list)
+    src_path = replaceFileExtension(src_path, ".jpg")
+
+    if os.path.exists(os.path.join(internalDirectory, os.path.basename(src_path))):
+        os.remove(os.path.join(internalDirectory, os.path.basename(src_path)))
+    if os.path.basename(src_path) in fileList:
+        fileList.remove(os.path.basename(src_path))
 
 def processOnMoved(src_path, dest_path, internalDirectory, fileList):
+    src_path = replaceFileExtension(src_path, ".jpg")
+
     if os.path.exists(os.path.join(internalDirectory, os.path.basename(src_path))):
         os.remove(os.path.join(internalDirectory, os.path.basename(src_path)))
     if os.path.basename(src_path) in fileList:
