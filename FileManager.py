@@ -65,8 +65,7 @@ def findOptimalRect(fileName):
             jsonFile = json.loads(res.content.decode('utf-8'))
             return (jsonFile['cropX'], jsonFile['cropY'], jsonFile['cropX'] + jsonFile['cropWidth'], jsonFile['cropY'] + jsonFile['cropHeight'])
         else:
-            print('Error return code')
-            print(res.status_code)
+            print('Error return code', res.status_code)
             return None
     except IOError:
         print('Error fetching rect from image')
@@ -119,7 +118,6 @@ def processOnMoved(src_path, dest_path, internalDirectory, fileList):
 class FileManager:
     def __init__(self, path):
         self.externalDirectory = path
-
         self.internalDirectory = os.path.join(os.path.dirname(path), 'internalDirectory')
 
         if not os.path.exists(self.internalDirectory):
@@ -146,19 +144,21 @@ class FileManager:
         register_heif_opener()
         while self.runFlag:
             try:
+                # there shouldn't be any timeout. but somehow it behaves weirdly if no timeout set
                 fileEvent = self.fileEventQueue.get(timeout=1)
 
+                # because of slow storage on the rpi, sometimes the file operation is still ongoing 
+                # so before doing any operation on the file, we must wait
+                # as this is a background task, a 1 second delay isn't that bad
+                # just slows down the processing of newly added pictures
                 time.sleep(1)
 
                 if fileEvent.event_type == 'created':
                     processOnCreated(fileEvent.src_path, self.internalDirectory, self.fileList)
-                    # print(fileEvent.src_path + ' added')
                 elif fileEvent.event_type == 'moved':
-                    # print(fileEvent.src_path + ' renamed to ' + fileEvent.dest_path)
                     processOnMoved(fileEvent.src_path, fileEvent.dest_path, self.internalDirectory, self.fileList)
                 elif fileEvent.event_type == 'deleted':
                     processOnDeleted(fileEvent.src_path, self.internalDirectory, self.fileList)
-                    # print(fileEvent.src_path + ' removed')
             except Exception as e:
                 print("exception", repr(e))
 
