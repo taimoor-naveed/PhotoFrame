@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QGridLayout
 from PyQt5.QtGui import QPixmap, QBrush, QColor
 from PyQt5.QtCore import Qt, pyqtSignal, QRectF, QTimeLine
-from TransitionManager import TransitionManager
+from TransitionManagerFade import TransitionManagerFade
+from TransitionManagerSlide import TransitionManagerSlide
+from TransitionManagerStack import TransitionManagerStack
 import math
 
 
@@ -36,7 +38,7 @@ class Canvas(QGraphicsView):
         self.scene.addItem(self.pixmapItem2)
         self.setScene(self.scene)
 
-        self.transitionManager = TransitionManager(self.pixmapItem1, self.pixmapItem2)
+        self.transitionManager = TransitionManagerStack(self.pixmapItem1, self.pixmapItem2)
 
         self.mousePressLocation = None
 
@@ -64,7 +66,7 @@ class Canvas(QGraphicsView):
             self.mousePressLocation = (event.x(), event.y())
             super().mousePressEvent(event)
 
-    def displayImage(self, fileName, trigger):
+    def displayImage(self, fileName, trigger, direction):
         self.setSceneRect(QRectF(0, 0, self.width(), self.height()))
-        self.transitionManager.displayImage(fileName, trigger)
+        self.transitionManager.displayImage(fileName, trigger, direction)
 

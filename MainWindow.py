@@ -70,16 +70,16 @@ class MainWindow(QMainWindow):
         else:
             fileName = self.fileManager.getNextFile()
 
-        self.canvas.displayImage(fileName, 0)
+        self.canvas.displayImage(fileName, 0, 1)
 
     def nextPhotoClicked(self):
         fileName = self.fileManager.getNextFile()
-        self.canvas.displayImage(fileName, 1)
+        self.canvas.displayImage(fileName, 1, 1)
         self.slideShowTimer.start(self.slideShowTimerTimeOut)
 
     def previousPhotoClicked(self):
         fileName = self.fileManager.getPreviousFile()
-        self.canvas.displayImage(fileName, 1)
+        self.canvas.displayImage(fileName, 1, 0)
         self.slideShowTimer.start(self.slideShowTimerTimeOut)
 
     def keyPressEvent(self, event):

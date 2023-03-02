@@ -1,7 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QGridLayout, QPushButton, QLineEdit, QVBoxLayout, QHBoxLayout
-from PyQt5.QtGui import QPixmap, QFont, QBrush, QColor
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
 from MainWindow import MainWindow
 
 DEFAULT_SLIDE_SHOW_TIMEOUT = 5000
